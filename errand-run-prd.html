@@ -1,0 +1,616 @@
+<title>Errand Run PRD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a route card. One narrow column; each PRD section is a numbered stop pinned to a dashed route line. */
+:root {
+  --bg: #eaeef3;
+  --surface: #ffffff;
+  --sunk: #f3f5f8;
+  --fg: #142033;
+  --muted: #586579;
+  --line: #cdd5df;
+  --accent: #1d47c4;
+  --accent-soft: #e2e9fb;
+  --hi: #f6c31c;
+  --hi-ink: #2a2100;
+  --danger: #c2332b;
+  --ok: #1f7a4d;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1420; --surface: #161f2e; --sunk: #111927; --fg: #e5eaf2; --muted: #95a2b5;
+    --line: #2b3749; --accent: #86a6ff; --accent-soft: #1e2b47; --hi: #f6c31c; --hi-ink: #2a2100;
+    --danger: #ff7d70; --ok: #5fcf96; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1420; --surface: #161f2e; --sunk: #111927; --fg: #e5eaf2; --muted: #95a2b5;
+  --line: #2b3749; --accent: #86a6ff; --accent-soft: #1e2b47; --hi: #f6c31c; --hi-ink: #2a2100;
+  --danger: #ff7d70; --ok: #5fcf96; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 1rem/1.6 var(--body);
+  padding: 0 16px; padding-block: 40px 72px;
+}
+.wrap { max-width: 860px; margin: 0 auto; display: grid; gap: 48px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h2 { font-size: 1.6rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 700; }
+p { margin: 0; max-width: 65ch; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.label { font: 600 .72rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+code { font-family: var(--mono); font-size: .88em; background: var(--sunk); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; }
+
+/* ---------- Hero ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: 32px; align-items: start; }
+.hero h1 { font-size: clamp(2.6rem, 7vw, 4.2rem); font-weight: 800; letter-spacing: -.02em; }
+.hero h1 mark { background: linear-gradient(transparent 58%, var(--hi) 58% 92%, transparent 92%); color: inherit; padding: 0 .06em; }
+.hero-copy { display: grid; gap: 20px; min-width: 0; }
+.hero .lede { font-size: 1.15rem; color: var(--fg); }
+.meta { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 0; font-size: .92rem; }
+.meta dt { color: var(--muted); }
+.meta dd { margin: 0; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font: 600 .78rem/1 var(--mono); padding: 5px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+
+/* ---------- App demo (the prototype, reproduced) ---------- */
+.app { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px -18px rgba(10, 25, 60, .45); overflow: hidden; }
+.app-head { padding: 16px 18px 14px; border-bottom: 1px dashed var(--line); display: grid; gap: 4px; }
+.app-title { font: 800 1.3rem/1 var(--display); }
+.app-title span { background: var(--hi); color: var(--hi-ink); padding: 0 4px; border-radius: 3px; }
+.app-sum { font-size: .9rem; color: var(--muted); }
+.app-sum b { color: var(--fg); font-family: var(--mono); font-weight: 600; }
+.chips { display: flex; gap: 6px; padding: 10px 18px 0; flex-wrap: wrap; }
+.chip { font: 600 .78rem/1 var(--body); padding: 6px 10px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.chip.clear { margin-left: auto; border-style: dashed; }
+.note { margin: 10px 18px 0; font-size: .78rem; color: var(--muted); background: var(--sunk); border-radius: 6px; padding: 6px 9px; }
+.stops { padding: 8px 18px 18px; display: grid; gap: 4px; }
+.stop { position: relative; padding-left: 26px; }
+.stop::before { content: ""; position: absolute; left: 6px; top: 26px; bottom: 4px; border-left: 2px dashed var(--line); }
+.stop-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding-top: 12px; position: relative; }
+.stop-head::before { content: ""; position: absolute; left: -26px; top: 14px; width: 14px; height: 14px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--hi); box-shadow: inset 0 0 0 4px var(--hi), inset 0 0 0 7px var(--hi-ink); }
+.stop-name { font: 700 .98rem/1.2 var(--display); }
+.stop-min { font: 600 .78rem/1 var(--mono); color: var(--muted); }
+.items { list-style: none; margin: 4px 0 0; padding: 0; display: grid; }
+.item { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: center; padding: 6px 0; font-size: .9rem; }
+.item input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
+.item .t { min-width: 0; }
+.item .due { grid-column: 2; font: .74rem/1.2 var(--mono); color: var(--muted); }
+.item .due.over { color: var(--danger); font-weight: 600; }
+.item .m { font: .76rem/1 var(--mono); color: var(--muted); grid-row: 1; grid-column: 3; }
+.item.done .t { text-decoration: line-through; color: var(--muted); }
+.empty { padding: 18px 0; color: var(--muted); font-size: .9rem; text-align: center; }
+.demo-cap { font-size: .8rem; color: var(--muted); margin-top: 8px; }
+
+/* ---------- Route of sections ---------- */
+.route { display: grid; gap: 0; }
+.sec { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 0 18px; padding-bottom: 52px; }
+.sec::before { content: ""; position: absolute; left: 21px; top: 44px; bottom: 6px; border-left: 2px dashed var(--line); }
+.sec:last-child::before { display: none; }
+.pin { width: 44px; height: 44px; border-radius: 50%; background: var(--hi); color: var(--hi-ink); display: grid; place-items: center; font: 600 .95rem/1 var(--mono); position: relative; z-index: 1; }
+.sec-body { display: grid; gap: 18px; min-width: 0; padding-top: 6px; }
+.sec-body > .label { margin-bottom: -10px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 10px; min-width: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+ul.ticks, ul.crosses { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+ul.ticks li, ul.crosses li { padding-left: 24px; position: relative; }
+ul.ticks li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 700; }
+ul.crosses li::before { content: "–"; position: absolute; left: 2px; color: var(--muted); font-weight: 700; }
+.problem { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.problem .arrow { align-self: center; font: 700 1.4rem/1 var(--mono); color: var(--accent); }
+.problem .card p { color: var(--muted); }
+
+/* traceability matrix */
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 600 .72rem/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); background: var(--sunk); }
+.matrix th.fr { text-align: center; padding: 8px 4px; writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: .02em; height: 64px; }
+.matrix td.c { text-align: center; padding: 8px 4px; }
+.matrix td.c .d { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.matrix td.us { white-space: nowrap; font-family: var(--mono); font-weight: 600; }
+.matrix td.want { min-width: 220px; }
+.matrix tfoot td { font-size: .8rem; color: var(--muted); }
+
+/* FR blocks */
+.frs { display: grid; gap: 14px; }
+.fr-row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; font-size: .94rem; }
+.fr-id { font: 600 .8rem/1.6 var(--mono); color: var(--accent); }
+
+/* pipeline */
+.pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; counter-reset: step; }
+.step { position: relative; background: var(--surface); border: 1px solid var(--line); padding: 14px 12px; display: grid; gap: 6px; align-content: start; font-size: .86rem; }
+.step:first-child { border-radius: 10px 0 0 10px; }
+.step:last-child { border-radius: 0 10px 10px 0; }
+.step + .step { border-left: 0; }
+.step b { font: 700 .95rem/1.2 var(--display); }
+.step .ex { font: .74rem/1.4 var(--mono); color: var(--muted); }
+.step .k { font: 600 .7rem/1 var(--mono); color: var(--accent); }
+
+/* due label samples */
+.dues { display: flex; flex-wrap: wrap; gap: 10px; }
+.due-s { display: grid; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: .82rem; color: var(--muted); }
+.due-s .v { font: 600 .9rem/1 var(--mono); color: var(--fg); }
+.due-s .v.over { color: var(--danger); }
+
+/* lifecycle flow */
+.flow { display: grid; gap: 10px; }
+.node { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: .9rem; display: grid; gap: 4px; }
+.node.q { border-color: var(--accent); background: var(--accent-soft); }
+.node .label { font-size: .66rem; }
+.down { text-align: center; color: var(--accent); font: 700 1rem/1 var(--mono); }
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.branch { display: grid; gap: 8px; }
+.branch > .label { color: var(--accent); }
+
+/* data model */
+.model { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+pre { margin: 0; font: .84rem/1.65 var(--mono); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; }
+pre .k { color: var(--accent); }
+pre .c { color: var(--muted); }
+.fields { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.field { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--line); font-size: .86rem; }
+.field:last-child { border-bottom: 0; }
+.field .mono { color: var(--accent); font-weight: 600; }
+
+/* metrics */
+.metric { display: grid; gap: 6px; }
+.metric .big { font: 800 2.2rem/1 var(--display); }
+.metric .big small { font: 600 .9rem/1 var(--mono); color: var(--muted); margin-left: 4px; }
+.metric p { font-size: .88rem; color: var(--muted); }
+
+/* limitations to future */
+.lim { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 10px; align-items: center; }
+.lim .card { padding: 12px 14px; font-size: .9rem; gap: 2px; }
+.lim .to { text-align: center; color: var(--accent); font: 700 1rem/1 var(--mono); }
+.lim .card.none { border-style: dashed; color: var(--muted); }
+.lim-head { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 10px; }
+
+footer { color: var(--muted); font-size: .85rem; border-top: 1px dashed var(--line); padding-top: 18px; }
+
+@media (max-width: 760px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .grid3 { grid-template-columns: minmax(0, 1fr); }
+  .pipe { grid-template-columns: minmax(0, 1fr); }
+  .step:first-child { border-radius: 10px 10px 0 0; }
+  .step:last-child { border-radius: 0 0 10px 10px; }
+  .step + .step { border-left: 1px solid var(--line); border-top: 0; }
+  .model { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .grid2, .split { grid-template-columns: minmax(0, 1fr); }
+  .problem { grid-template-columns: minmax(0, 1fr); }
+  .problem .arrow { transform: rotate(90deg); justify-self: center; }
+  .sec { grid-template-columns: 32px minmax(0, 1fr); gap: 0 12px; }
+  .pin { width: 32px; height: 32px; font-size: .8rem; }
+  .sec::before { left: 15px; top: 32px; }
+  .lim, .lim-head { grid-template-columns: minmax(0, 1fr); }
+  .lim .to { transform: rotate(90deg); }
+  .lim-head > :nth-child(2), .lim-head > :nth-child(3) { display: none; }
+  .fr-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .item { transition: opacity .2s; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-copy">
+      <span class="label">Product requirements · v1</span>
+      <h1>Errand <mark>Run</mark></h1>
+      <p class="lede">A single-page errand list that groups errands by the place they happen, estimates each stop, and adds up the whole trip. No account, no backend: data stays in the browser.</p>
+      <dl class="meta">
+        <dt>Status</dt><dd><span class="pill">v1 shipped (prototype)</span></dd>
+        <dt>Owner</dt><dd>StudUser2</dd>
+        <dt>Last updated</dt><dd class="mono">2026-10-16</dd>
+        <dt>Prototype</dt><dd><a href="https://claude.ai/artifact/T8kSGL4RwptuMFheskfLF4" target="_blank" rel="noopener">Open the live app</a></dd>
+      </dl>
+    </div>
+
+    <div>
+      <div class="app" aria-label="Errand Run demo">
+        <div class="app-head">
+          <div class="app-title">Errand <span>Run</span></div>
+          <div class="app-sum" id="sum" aria-live="polite"></div>
+        </div>
+        <div class="chips" role="group" aria-label="Filter">
+          <button class="chip" id="f-todo" data-f="todo" aria-pressed="true">To do</button>
+          <button class="chip" id="f-all" data-f="all" aria-pressed="false">All</button>
+          <button class="chip" id="f-done" data-f="done" aria-pressed="false">Done</button>
+          <button class="chip clear" id="clear">Clear done</button>
+        </div>
+        <div class="note">These are example errands. They disappear when you add your own.</div>
+        <div class="stops" id="stops"></div>
+      </div>
+      <p class="demo-cap">Working demo of the spec, as of Fri, Oct 16. Check items off and switch filters to see grouping, totals and empty states.</p>
+    </div>
+  </header>
+
+  <main class="route">
+
+    <section class="sec" id="summary">
+      <div class="pin">1</div>
+      <div class="sec-body">
+        <h2>Summary &amp; problem</h2>
+        <div class="problem">
+          <div class="card">
+            <span class="label">Today</span>
+            <h3>Generic to-do lists and paper</h3>
+            <p>They don't show which tasks happen at the same place or how long a trip takes. People go back to the same shop twice or misjudge the time they need.</p>
+          </div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="card">
+            <span class="label">Errand Run</span>
+            <h3>A list shaped like a trip</h3>
+            <p>Errands are grouped by stop, each stop has a time estimate, and the header totals the whole run.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="goals">
+      <div class="pin">3</div>
+      <div class="sec-body">
+        <h2>Goals and non-goals</h2>
+        <div class="grid2">
+          <div class="card">
+            <span class="label">Goals</span>
+            <ul class="ticks">
+              <li>Add an errand in under 5 seconds</li>
+              <li>Group errands by stop automatically</li>
+              <li>Show total time left at a glance</li>
+              <li>Make overdue and due-today errands easy to spot</li>
+              <li>Work offline, no sign-up, data stays on the device</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="label">Not in v1</span>
+            <ul class="crosses">
+              <li>Accounts, sync or sharing</li>
+              <li>Maps, addresses, routing or travel time</li>
+              <li>Reminders or push notifications</li>
+              <li>Recurring errands</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="users">
+      <div class="pin">4</div>
+      <div class="sec-body">
+        <h2>Who it's for</h2>
+        <div class="grid2">
+          <div class="card">
+            <h3>Busy individual</h3>
+            <p>Runs several errands on a day off and wants to get them all done in one trip.</p>
+          </div>
+          <div class="card">
+            <h3>Household planner</h3>
+            <p>Keeps a running list of things to pick up or drop off during the week.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="stories">
+      <div class="pin">5</div>
+      <div class="sec-body">
+        <h2>User stories, traced to requirements</h2>
+        <p>Each story and the functional requirements that deliver it. FR-12 and FR-20–21 support the whole app rather than one story.</p>
+        <div class="scroll">
+          <table class="matrix" id="matrix"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="fr">
+      <div class="pin">6</div>
+      <div class="sec-body">
+        <h2>Functional requirements</h2>
+
+        <span class="label">How the list is built · FR-4 to FR-8</span>
+        <div class="pipe">
+          <div class="step"><span class="k">FR-4 · FR-5</span><b>Normalize place</b><span>Ignore case and extra spaces. Blank becomes "Anywhere".</span><span class="ex">" pharmacy " → Pharmacy</span></div>
+          <div class="step"><span class="k">FR-5</span><b>Group by stop</b><span>One group per distinct place.</span><span class="ex">6 errands → 4 stops</span></div>
+          <div class="step"><span class="k">FR-6</span><b>Order stops</b><span>Earliest due date first, then A–Z. Stops with no due dates go last.</span><span class="ex">Oct 14 · 16 · 17 · 19</span></div>
+          <div class="step"><span class="k">FR-7</span><b>Order errands</b><span>Open before done, then by due date.</span><span class="ex">☐ Today · ☐ — · ☑ done</span></div>
+          <div class="step"><span class="k">FR-8</span><b>Stop total</b><span>Header shows minutes of open errands at that stop.</span><span class="ex">Pharmacy · 25 min</span></div>
+        </div>
+
+        <span class="label">Due labels · FR-10</span>
+        <div class="dues">
+          <div class="due-s"><span class="v over">2 d overdue</span>due Oct 14, shown in red</div>
+          <div class="due-s"><span class="v">Today</span>due Oct 16</div>
+          <div class="due-s"><span class="v">Tomorrow</span>due Oct 17</div>
+          <div class="due-s"><span class="v">Mon, Oct 19</span>any later date</div>
+        </div>
+
+        <span class="label">All requirements</span>
+        <div class="frs" id="frs"></div>
+      </div>
+    </section>
+
+    <section class="sec" id="data">
+      <div class="pin">7</div>
+      <div class="sec-body">
+        <h2>Data model and lifecycle</h2>
+        <div class="model">
+          <pre><span class="c">// one errand; stored as a JSON array</span>
+{
+  <span class="k">"id"</span>:     "lq3x9k2",
+  <span class="k">"title"</span>:  "Pick up prescription",
+  <span class="k">"place"</span>:  "Pharmacy",
+  <span class="k">"due"</span>:    "2026-10-16",
+  <span class="k">"min"</span>:    10,
+  <span class="k">"done"</span>:   false,
+  <span class="k">"sample"</span>: true
+}</pre>
+          <div class="fields">
+            <div class="field"><span class="mono">id</span><span>Base-36 timestamp, or <code>s0</code>–<code>s5</code> for examples</span></div>
+            <div class="field"><span class="mono">title</span><span>Required text</span></div>
+            <div class="field"><span class="mono">place</span><span>May be empty, which groups under "Anywhere"</span></div>
+            <div class="field"><span class="mono">due</span><span><code>YYYY-MM-DD</code>, may be empty</span></div>
+            <div class="field"><span class="mono">min</span><span>Integer from 1 to 600, default 10</span></div>
+            <div class="field"><span class="mono">done</span><span>Checked off or not</span></div>
+            <div class="field"><span class="mono">sample</span><span>Present only on example errands</span></div>
+          </div>
+        </div>
+
+        <span class="label">Storage lifecycle · FR-18 to FR-21</span>
+        <div class="flow">
+          <div class="node"><b>App opens</b></div>
+          <div class="down" aria-hidden="true">↓</div>
+          <div class="node q"><span class="label">Check</span>Is there saved data under <code>errand-run-v1</code>?</div>
+          <div class="split">
+            <div class="branch">
+              <span class="label">Yes</span>
+              <div class="node">Load the saved list</div>
+            </div>
+            <div class="branch">
+              <span class="label">No</span>
+              <div class="node">Show 6 example errands and a note saying they're examples <span class="mono label">FR-18</span></div>
+              <div class="node">On the first real errand, remove all examples <span class="mono label">FR-19</span></div>
+            </div>
+          </div>
+          <div class="down" aria-hidden="true">↓</div>
+          <div class="node"><b>Every change</b> is written to <code>localStorage</code> <span class="mono label">FR-20</span></div>
+          <div class="node"><b>Storage blocked</b> (private window): keep working in memory for the session, no errors <span class="mono label">FR-21</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="nfr">
+      <div class="pin">8</div>
+      <div class="sec-body">
+        <h2>Non-functional requirements</h2>
+        <div class="grid3">
+          <div class="card"><h3>Platform</h3><p>One self-contained HTML page for modern desktop and mobile browsers.</p></div>
+          <div class="card"><h3>Responsive</h3><p>Works from 400 px. Form stacks below 480 px. No sideways scroll.</p></div>
+          <div class="card"><h3>Theming</h3><p>Light and dark, following the system or an explicit choice.</p></div>
+          <div class="card"><h3>Accessibility</h3><p>Labelled controls, visible focus, "Mark X done" checkbox names, <code>aria-live</code> summary, reduced motion.</p></div>
+          <div class="card"><h3>Performance</h3><p>No frameworks. Google Fonts is the only external resource, with system fallbacks.</p></div>
+          <div class="card"><h3>Privacy</h3><p>No data leaves the device.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="design">
+      <div class="pin">9</div>
+      <div class="sec-body">
+        <h2>Design notes</h2>
+        <p>The layout reads like a route card: one narrow column, each stop a pin, with a dashed line connecting its errands. This page uses the same system.</p>
+        <div class="grid3">
+          <div class="card"><span class="label">Headings</span><span style="font: 700 1.5rem/1.1 var(--display)">Bricolage Grotesque</span></div>
+          <div class="card"><span class="label">Body</span><span style="font: 400 1.15rem/1.3 var(--body)">Atkinson Hyperlegible</span></div>
+          <div class="card"><span class="label">Numbers</span><span style="font: 600 1.05rem/1.3 var(--mono)">1 h 10 min</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="metrics">
+      <div class="pin">10</div>
+      <div class="sec-body">
+        <h2>Success metrics</h2>
+        <p>Targets for v1, not measured results.</p>
+        <div class="grid3">
+          <div class="card metric"><span class="label">Speed</span><div class="big">&lt; 5<small>s</small></div><p>Median time to add an errand</p></div>
+          <div class="card metric"><span class="label">Grouping used</span><div class="big">≥ 60<small>%</small></div><p>Errands with a place filled in</p></div>
+          <div class="card metric"><span class="label">Retention</span><div class="big">7<small>days</small></div><p>Returning users come back to an existing list</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="future">
+      <div class="pin">11</div>
+      <div class="sec-body">
+        <h2>Known limitations and what's next</h2>
+        <div class="lim-head"><span class="label">Limitation in v1</span><span></span><span class="label">Future idea that addresses it</span></div>
+        <div class="lim"><div class="card">Data lives in one browser; clearing site data erases it</div><div class="to" aria-hidden="true">→</div><div class="card">2 · Optional sync and household sharing</div></div>
+        <div class="lim"><div class="card">No undo for delete or Clear done</div><div class="to" aria-hidden="true">→</div><div class="card">1 · Undo the last delete</div></div>
+        <div class="lim"><div class="card">No editing: delete and re-add instead</div><div class="to" aria-hidden="true">→</div><div class="card">1 · Edit an errand inline</div></div>
+        <div class="lim"><div class="card">"Pharmacy" and "Pharmacie" become two stops</div><div class="to" aria-hidden="true">→</div><div class="card none">No planned fix yet</div></div>
+        <span class="label">Other v2+ ideas</span>
+        <div class="grid2">
+          <div class="card">3 · Addresses and map links per stop, then optimized stop order</div>
+          <div class="card">4 · Recurring errands, such as a weekly grocery run</div>
+          <div class="card">5 · Reminders on the due date</div>
+          <div class="card">6 · Reorder stops by drag and drop</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Errand Run PRD · generated from PRD.md · last updated 2026-10-16</footer>
+</div>
+
+<script>
+(function () {
+  // ---- Demo: example errands as of Fri 2026-10-16 ----
+  var errands = [
+    { id: "s0", title: "Return package", place: "Post office", due: "2026-10-14", min: 15, done: false },
+    { id: "s1", title: "Pick up prescription", place: "Pharmacy", due: "2026-10-16", min: 10, done: false },
+    { id: "s2", title: "Buy sunscreen", place: " pharmacy ", due: "", min: 15, done: false },
+    { id: "s3", title: "Copy house keys", place: "Hardware store", due: "2026-10-17", min: 10, done: false },
+    { id: "s4", title: "Buy light bulbs", place: "Hardware store", due: "2026-10-19", min: 15, done: false },
+    { id: "s5", title: "Call the dentist", place: "", due: "2026-10-19", min: 5, done: false }
+  ];
+  var TODAY = Date.UTC(2026, 9, 16);
+  var filter = "todo";
+  var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function key(p) { return (p || "").trim().replace(/\s+/g, " ").toLowerCase(); }
+  function fmtMin(m) { return m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; }
+  function dueLabel(d) {
+    if (!d) return null;
+    var p = d.split("-"), t = Date.UTC(+p[0], +p[1] - 1, +p[2]);
+    var diff = Math.round((t - TODAY) / 864e5);
+    if (diff < 0) return { text: -diff + " d overdue", over: true };
+    if (diff === 0) return { text: "Today" };
+    if (diff === 1) return { text: "Tomorrow" };
+    var dt = new Date(t);
+    return { text: DAYS[dt.getUTCDay()] + ", " + MONTHS[dt.getUTCMonth()] + " " + dt.getUTCDate() };
+  }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function render() {
+    var open = errands.filter(function (e) { return !e.done; });
+    var total = open.reduce(function (a, e) { return a + e.min; }, 0);
+    var stopsLeft = {};
+    open.forEach(function (e) { stopsLeft[key(e.place) || "anywhere"] = 1; });
+    var nStops = Object.keys(stopsLeft).length;
+    document.getElementById("sum").innerHTML = "<b>" + fmtMin(total) + "</b> left · " + open.length + " errand" + (open.length === 1 ? "" : "s") + " at " + nStops + " stop" + (nStops === 1 ? "" : "s");
+
+    var shown = errands.filter(function (e) { return filter === "all" || (filter === "done" ? e.done : !e.done); });
+    var groups = {};
+    shown.forEach(function (e) {
+      var k = key(e.place) || "anywhere";
+      if (!groups[k]) groups[k] = { name: k === "anywhere" ? "Anywhere" : e.place.trim().replace(/\s+/g, " "), items: [] };
+      groups[k].items.push(e);
+    });
+    var list = Object.keys(groups).map(function (k) {
+      var g = groups[k];
+      var dues = g.items.map(function (e) { return e.due; }).filter(Boolean).sort();
+      g.first = dues[0] || "";
+      g.items.sort(function (a, b) {
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        return (a.due || "9999") < (b.due || "9999") ? -1 : (a.due || "9999") > (b.due || "9999") ? 1 : 0;
+      });
+      return g;
+    }).sort(function (a, b) {
+      if (!a.first !== !b.first) return a.first ? -1 : 1;
+      if (a.first !== b.first) return a.first < b.first ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    var el = document.getElementById("stops");
+    if (!list.length) {
+      el.innerHTML = '<div class="empty">' + (filter === "done" ? "Nothing checked off yet." : "All clear. Add an errand above.") + "</div>";
+      return;
+    }
+    el.innerHTML = list.map(function (g) {
+      var mins = g.items.filter(function (e) { return !e.done; }).reduce(function (a, e) { return a + e.min; }, 0);
+      return '<div class="stop"><div class="stop-head"><span class="stop-name">' + esc(g.name) + '</span><span class="stop-min">' + fmtMin(mins) + '</span></div><ul class="items">' +
+        g.items.map(function (e) {
+          var d = dueLabel(e.due);
+          return '<li class="item' + (e.done ? " done" : "") + '"><input type="checkbox" id="cb-' + e.id + '" data-id="' + e.id + '"' + (e.done ? " checked" : "") + ' aria-label="Mark ' + esc(e.title) + ' done"><span class="t">' + esc(e.title) + '</span><span class="m">' + e.min + ' min</span>' +
+            (d ? '<span class="due' + (d.over ? " over" : "") + '">' + d.text + "</span>" : "") + "</li>";
+        }).join("") + "</ul></div>";
+    }).join("");
+  }
+
+  document.getElementById("stops").addEventListener("change", function (ev) {
+    var id = ev.target.getAttribute("data-id");
+    errands.forEach(function (e) { if (e.id === id) e.done = ev.target.checked; });
+    render();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".chip[data-f]"), function (b) {
+    b.addEventListener("click", function () {
+      filter = b.getAttribute("data-f");
+      Array.prototype.forEach.call(document.querySelectorAll(".chip[data-f]"), function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+      render();
+    });
+  });
+  document.getElementById("clear").addEventListener("click", function () {
+    errands = errands.filter(function (e) { return !e.done; });
+    render();
+  });
+  render();
+
+  // ---- Traceability matrix ----
+  var stories = [
+    ["US-1", "Add an errand with a place, due date and time estimate", [1, 2, 3, 4]],
+    ["US-2", "See errands grouped by place", [4, 5, 6, 7, 8]],
+    ["US-3", "See total minutes and stops left", [8, 13, 14]],
+    ["US-4", "Check off an errand", [9, 11]],
+    ["US-5", "Filter To do / All / Done", [15, 17]],
+    ["US-6", "Clear finished errands in one click", [16]],
+    ["US-7", "See overdue errands highlighted", [10]],
+    ["US-8", "See example errands on first use", [18, 19]]
+  ];
+  var h = '<thead><tr><th>Story</th><th>I want to…</th>';
+  for (var i = 1; i <= 21; i++) h += '<th class="fr">FR-' + i + "</th>";
+  h += "</tr></thead><tbody>";
+  stories.forEach(function (s) {
+    h += '<tr><td class="us">' + s[0] + '</td><td class="want">' + s[1] + "</td>";
+    for (var i = 1; i <= 21; i++) h += '<td class="c">' + (s[2].indexOf(i) > -1 ? '<span class="d" title="' + s[0] + " uses FR-" + i + '"></span>' : "") + "</td>";
+    h += "</tr>";
+  });
+  document.getElementById("matrix").innerHTML = h + "</tbody>";
+
+  // ---- FR list ----
+  var frGroups = [
+    ["Add errand", [
+      [1, "Fields: Errand (required), Stop / place (optional), Due (optional date), Minutes (1–600, default 10)."],
+      [2, "Place field autocompletes from places already entered."],
+      [3, "After adding, the Errand field clears and keeps focus."],
+      [4, "An errand without a place is grouped under “Anywhere”."]]],
+    ["List and grouping", [
+      [5, "Group by place, ignoring letter case and extra spaces."],
+      [6, "Sort groups by earliest due date, then A–Z; groups with no due dates last."],
+      [7, "Within a group: open before done, then by due date."],
+      [8, "Group header shows the place and total open minutes."]]],
+    ["Errand item", [
+      [9, "Checkbox, title, time estimate and due label."],
+      [10, "Due label: Today, Tomorrow, “N d overdue” in red, or a short date."],
+      [11, "Done items are crossed out and muted."],
+      [12, "Each item has a delete (×) button."]]],
+    ["Trip summary", [
+      [13, "Header total of open minutes, as “X h Y min” from 60 minutes."],
+      [14, "Header counts errands and distinct stops left."]]],
+    ["Filters and bulk actions", [
+      [15, "Filter chips: To do (default), All, Done."],
+      [16, "Clear done removes every completed errand."],
+      [17, "Empty states: “All clear. Add an errand above.” and “Nothing checked off yet.”"]]],
+    ["Sample data", [
+      [18, "With no saved data, show 6 example errands and a note."],
+      [19, "Adding the first errand removes all examples."]]],
+    ["Persistence", [
+      [20, "Save to localStorage key errand-run-v1 after every change."],
+      [21, "If storage is unavailable, keep working for the session without errors."]]]
+  ];
+  document.getElementById("frs").innerHTML = '<div class="grid2">' + frGroups.map(function (g) {
+    return '<div class="card"><h3>' + g[0] + "</h3>" + g[1].map(function (r) {
+      return '<div class="fr-row"><span class="fr-id">FR-' + r[0] + "</span><span>" + esc(r[1]) + "</span></div>";
+    }).join("") + "</div>";
+  }).join("") + "</div>";
+})();
+</script>
